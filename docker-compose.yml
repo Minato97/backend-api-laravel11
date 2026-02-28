@@ -32,8 +32,12 @@ services:
         environment:
             MYSQL_DATABASE: backend_api
             MYSQL_ROOT_PASSWORD: root
+            MYSQL_PASSWORD: root
+            MYSQL_USER: laravel
         ports:
             - "3306:3306"
+        volumes:
+            - dbdata:/var/lib/mysq
         networks:
             - laravel
 
@@ -63,3 +67,6 @@ services:
 
 networks:
     laravel:
+
+volumes:
+    dbdata:
