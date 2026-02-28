@@ -25,7 +25,7 @@ services:
         networks:
             - laravel
 
-    mysql:
+    db:
         image: mysql:8.0
         container_name: backend_api_mysql
         restart: unless-stopped
