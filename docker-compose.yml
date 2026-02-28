@@ -53,7 +53,7 @@ services:
             PMA_USER: root
             PMA_PASSWORD: root
         depends_on:
-            - mysql
+            - db
         networks:
             - laravel
 
