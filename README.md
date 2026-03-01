@@ -1,66 +1,88 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🚀 Laravel 11 — Guía de instalación
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sigue estos pasos después de clonar el repositorio para levantar el proyecto localmente.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 📋 Requisitos previos
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Asegúrate de tener instalado:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| Herramienta | Verificar con |
+|---|---|
+| Docker | `docker --version` |
+| Docker Compose v2 | `docker compose version` |
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## ▶️ Instalación en un solo comando
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```bash
+bash setup.sh
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Eso es todo. El script hace automáticamente:
 
-## Laravel Sponsors
+1. Copia `.env.example` → `.env` *(si no existe)*
+2. Levanta los contenedores Docker
+3. Ejecuta `composer install`
+4. Genera el `APP_KEY`
+5. Ejecuta migraciones y seeders
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## 🌐 URLs disponibles al terminar
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+| Servicio | URL |
+|---|---|
+| API Laravel | http://localhost:8000 |
+| phpMyAdmin | http://localhost:8080 |
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## ⚙️ Variables de entorno
 
-## Code of Conduct
+Si necesitas cambiar algo (nombre de BD, credenciales, puertos), edita el archivo `.env` **antes** de correr el script:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+cp .env.example .env
+# edita .env con tu editor
+bash setup.sh
+```
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 🛠 Comandos útiles
 
-## License
+```bash
+# Ver logs en tiempo real
+docker compose logs -f
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Entrar al contenedor
+docker compose exec app bash
+
+# Detener contenedores
+docker compose down
+
+# Reiniciar desde cero (borra datos)
+docker compose exec app php artisan migrate:fresh --seed
+```
+
+---
+
+## ❗ Problemas comunes
+
+**El script dice "El archivo .env ya existe"**
+Normal si ya corriste el script antes. Tu `.env` actual se conserva sin cambios.
+
+**Error de permisos al ejecutar el script**
+```bash
+chmod +x setup.sh
+bash setup.sh
+```
+
+**Los contenedores tardan en iniciar**
+Si ves errores de conexión a la base de datos justo al correr, espera unos segundos y vuelve a ejecutar solo las migraciones:
+```bash
+docker compose exec app php artisan migrate --seed --force
+```
