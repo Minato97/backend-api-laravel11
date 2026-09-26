@@ -7,19 +7,23 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Services\UserService;
 use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
+    public function __construct(private UserService $userService)
+    {
+    }
 
     public function index()
     {
-        return UserResource::collection(User::paginate(10));
+        return UserResource::collection($this->userService->listar());
     }
 
     public function store(StoreUserRequest $request)
     {
-        $user = User::registrar($request->validated());
+        $user = $this->userService->registrar($request->validated());
 
         return (new UserResource($user))->response()->setStatusCode(201);
     }
@@ -31,8 +35,7 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, User $user)
     {
-        // El cast "hashed" del modelo encripta el password automáticamente
-        $user->update($request->validated());
+        $user = $this->userService->actualizar($user, $request->validated());
 
         return new UserResource($user);
     }
@@ -41,8 +44,7 @@ class UserController extends Controller
     {
         Gate::authorize('delete', $user);
 
-        $user->tokens()->delete();
-        $user->delete();
+        $this->userService->eliminar($user);
 
         return response()->json([
             'message' => 'Usuario eliminado'

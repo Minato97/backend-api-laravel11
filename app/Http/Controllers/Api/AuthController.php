@@ -2,41 +2,40 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Resources\UserResource;
-use Illuminate\Support\Facades\Hash;
+use App\Services\AuthService;
 
 class AuthController extends Controller
 {
+    public function __construct(private AuthService $authService)
+    {
+    }
+
     public function register(StoreUserRequest $request)
     {
-        $user = User::registrar($request->validated());
-
-        $token = $user->createToken('api-token')->plainTextToken;
+        $resultado = $this->authService->registrar($request->validated());
 
         return response()->json([
-            'user' => new UserResource($user),
-            'token' => $token
+            'user' => new UserResource($resultado['user']),
+            'token' => $resultado['token']
         ], 201);
     }
 
     public function login(LoginRequest $request)
     {
-        $user = User::where('email', $request->email)->first();
+        $resultado = $this->authService->login($request->email, $request->password);
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
+        if (! $resultado) {
             return response()->json(['message' => 'Credenciales inválidas'], 401);
         }
 
-        $token = $user->createToken('api-token')->plainTextToken;
-
         return response()->json([
-            'user' => new UserResource($user),
-            'token' => $token
+            'user' => new UserResource($resultado['user']),
+            'token' => $resultado['token']
         ]);
     }
 
@@ -48,7 +47,7 @@ class AuthController extends Controller
     // 🔐 Logout (elimina el token actual)
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        $this->authService->logout($request->user());
 
         return response()->json([
             'message' => 'Sesión cerrada correctamente'
@@ -58,10 +57,7 @@ class AuthController extends Controller
     // 🔐 Logout en todos los dispositivos
     public function logoutAll(Request $request)
     {
-        $user = $request->user();
-
-        // Elimina todos los tokens asociados al usuario
-        $user->tokens()->delete();
+        $this->authService->logoutAll($request->user());
 
         return response()->json([
             'message' => 'Sesión cerrada en todos los dispositivos correctamente'
