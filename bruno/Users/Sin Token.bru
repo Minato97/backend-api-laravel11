@@ -1,0 +1,17 @@
+meta {
+  name: Sin Token
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/users
+  body: none
+  auth: none
+}
+
+tests {
+  test("sin token responde 401", function () {
+    expect(res.status).to.equal(401);
+  });
+}

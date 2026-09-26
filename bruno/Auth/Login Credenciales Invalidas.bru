@@ -1,0 +1,24 @@
+meta {
+  name: Login Credenciales Invalidas
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "{{userEmail}}",
+    "password": "incorrecta"
+  }
+}
+
+tests {
+  test("responde 401", function () {
+    expect(res.status).to.equal(401);
+  });
+}

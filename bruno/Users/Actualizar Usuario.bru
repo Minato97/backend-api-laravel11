@@ -1,0 +1,31 @@
+meta {
+  name: Actualizar Usuario
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/users/{{userId}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "nombres": "Ana María",
+    "estatus_id": 2
+  }
+}
+
+docs {
+  `roles_id` y `estatus_id` solo se aplican si el token es de un Administrador.
+  Un usuario normal solo puede editarse a sí mismo (si no, 403).
+}
+
+tests {
+  test("actualiza el usuario", function () {
+    expect(res.status).to.equal(200);
+    expect(res.body.data.nombres).to.equal("Ana María");
+    expect(res.body.data.estatus_id).to.equal(2);
+  });
+}

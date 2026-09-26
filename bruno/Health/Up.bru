@@ -1,0 +1,17 @@
+meta {
+  name: Up
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/up
+  body: none
+  auth: none
+}
+
+tests {
+  test("la app responde 200", function () {
+    expect(res.status).to.equal(200);
+  });
+}

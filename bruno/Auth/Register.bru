@@ -1,0 +1,40 @@
+meta {
+  name: Register
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nombres": "Juan",
+    "apellido_paterno": "Pérez",
+    "apellido_materno": "López",
+    "email": "{{registerEmail}}",
+    "password": "secreto123"
+  }
+}
+
+script:pre-request {
+  // Email único en cada ejecución para no chocar con la regla unique
+  bru.setVar("registerEmail", `juan${Date.now()}@example.com`);
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("token", res.body.token);
+  }
+}
+
+tests {
+  test("crea el usuario (201) y devuelve token", function () {
+    expect(res.status).to.equal(201);
+    expect(res.body.token).to.be.a("string");
+    expect(res.body.user.roles_id).to.equal(2);
+  });
+}

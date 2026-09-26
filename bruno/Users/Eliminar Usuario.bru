@@ -1,0 +1,17 @@
+meta {
+  name: Eliminar Usuario
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/users/{{userId}}
+  body: none
+  auth: inherit
+}
+
+tests {
+  test("elimina el usuario", function () {
+    expect(res.status).to.equal(200);
+  });
+}

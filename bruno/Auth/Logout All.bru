@@ -1,0 +1,23 @@
+meta {
+  name: Logout All
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/auth/logout-all
+  body: none
+  auth: inherit
+}
+
+script:post-response {
+  if (res.status === 200) {
+    bru.setEnvVar("token", "");
+  }
+}
+
+tests {
+  test("cierra sesión en todos los dispositivos", function () {
+    expect(res.status).to.equal(200);
+  });
+}

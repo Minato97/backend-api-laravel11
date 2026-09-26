@@ -1,0 +1,19 @@
+meta {
+  name: Profile
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/auth/profile
+  body: none
+  auth: inherit
+}
+
+tests {
+  test("devuelve el usuario autenticado sin password", function () {
+    expect(res.status).to.equal(200);
+    expect(res.body.data.email).to.be.a("string");
+    expect(res.body.data).to.not.have.property("password");
+  });
+}

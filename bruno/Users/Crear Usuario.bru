@@ -1,0 +1,38 @@
+meta {
+  name: Crear Usuario
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/users
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nombres": "Ana",
+    "apellido_paterno": "García",
+    "email": "{{newUserEmail}}",
+    "password": "secreto123"
+  }
+}
+
+script:pre-request {
+  bru.setVar("newUserEmail", `ana${Date.now()}@example.com`);
+}
+
+script:post-response {
+  // Guarda el id para Ver / Actualizar / Eliminar
+  if (res.status === 201) {
+    bru.setVar("userId", res.body.data.id);
+  }
+}
+
+tests {
+  test("crea el usuario (201) y guarda userId", function () {
+    expect(res.status).to.equal(201);
+    expect(res.body.data.id).to.be.a("number");
+  });
+}

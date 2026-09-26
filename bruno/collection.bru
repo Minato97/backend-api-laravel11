@@ -1,0 +1,21 @@
+headers {
+  Accept: application/json
+}
+
+auth {
+  mode: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  # Backend API Laravel
+
+  1. Selecciona el environment **Local**.
+  2. Ejecuta **Auth / Login Admin** (o Register / Login Usuario): el token se guarda solo en la variable `token`.
+  3. Las peticiones protegidas heredan `Authorization: Bearer {{token}}` de la colección.
+
+  Con el Runner puedes correr toda la colección en orden (requiere la BD recién sembrada: `php artisan migrate:fresh --seed`).
+}
