@@ -5,11 +5,26 @@ namespace App\Http\Controllers\Api;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    public function register(StoreUserRequest $request)
+    {
+        $user = User::registrar($request->validated());
+
+        $token = $user->createToken('api-token')->plainTextToken;
+
+        return response()->json([
+            'user' => new UserResource($user),
+            'token' => $token
+        ], 201);
+    }
+
+    public function login(LoginRequest $request)
     {
         $user = User::where('email', $request->email)->first();
 
@@ -20,14 +35,14 @@ class AuthController extends Controller
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
-            'user' => $user,
+            'user' => new UserResource($user),
             'token' => $token
         ]);
     }
 
     public function profile(Request $request)
     {
-        return response()->json($request->user());
+        return new UserResource($request->user());
     }
 
     // 🔐 Logout (elimina el token actual)

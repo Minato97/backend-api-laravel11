@@ -9,6 +9,9 @@ class Rol extends Model
 {
     use HasFactory;
 
+    public const ADMINISTRADOR = 'Administrador';
+    public const USUARIO = 'Usuario';
+
     protected $table = 'roles';
 
     protected $fillable = [

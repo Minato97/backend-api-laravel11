@@ -13,7 +13,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable, HasApiTokens;
 
     /**
-     * The attributes that are mass assignable.ñ
+     * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
@@ -33,6 +33,24 @@ class User extends Authenticatable
     }
     public function estatus(){
         return $this->belongsTo(Estatus::class,'estatus_id');
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->roles?->rol === Rol::ADMINISTRADOR;
+    }
+
+    /**
+     * Crea un usuario desde un registro público: siempre con rol "Usuario" y estatus "Activo",
+     * sin permitir que el cliente elija su propio rol.
+     */
+    public static function registrar(array $datos): self
+    {
+        return static::create([
+            ...$datos,
+            'roles_id' => Rol::where('rol', Rol::USUARIO)->value('id'),
+            'estatus_id' => Estatus::where('estatus', Estatus::ACTIVO)->value('id'),
+        ]);
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class UpdateUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()->can('update', $this->route('user'));
     }
 
     /**
@@ -21,10 +22,20 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|email|unique:users,email,' . $this->route('user'),
-            'password' => 'sometimes|min:6'
+        $rules = [
+            'nombres' => 'sometimes|string|max:255',
+            'apellido_paterno' => 'sometimes|string|max:255',
+            'apellido_materno' => 'sometimes|nullable|string|max:255',
+            'email' => ['sometimes', 'email', 'max:255', Rule::unique('users', 'email')->ignore($this->route('user'))],
+            'password' => 'sometimes|string|min:6',
         ];
+
+        // Solo un administrador puede cambiar el rol o el estatus
+        if ($this->user()->isAdmin()) {
+            $rules['roles_id'] = 'sometimes|integer|exists:roles,id';
+            $rules['estatus_id'] = 'sometimes|integer|exists:estatus,id';
+        }
+
+        return $rules;
     }
 }

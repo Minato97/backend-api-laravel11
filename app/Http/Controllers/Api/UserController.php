@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
@@ -19,12 +19,9 @@ class UserController extends Controller
 
     public function store(StoreUserRequest $request)
     {
-        $user = User::create([
-            ...$request->validated(),
-            'password' => Hash::make($request->password)
-        ]);
+        $user = User::registrar($request->validated());
 
-        return new UserResource($user);
+        return (new UserResource($user))->response()->setStatusCode(201);
     }
 
     public function show(User $user)
@@ -34,6 +31,7 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, User $user)
     {
+        // El cast "hashed" del modelo encripta el password automáticamente
         $user->update($request->validated());
 
         return new UserResource($user);
@@ -41,6 +39,9 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        Gate::authorize('delete', $user);
+
+        $user->tokens()->delete();
         $user->delete();
 
         return response()->json([

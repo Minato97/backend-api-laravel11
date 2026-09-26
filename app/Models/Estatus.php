@@ -9,6 +9,9 @@ class Estatus extends Model
 {
     use HasFactory;
 
+    public const ACTIVO = 'Activo';
+    public const INACTIVO = 'Inactivo';
+
     protected $table = 'estatus';
 
     protected $fillable = [
@@ -19,10 +22,6 @@ class Estatus extends Model
         'id' => 'integer'
     ];
 
-    public function reportes()
-    {
-        return $this->hasMany(Report::class, 'estatus_id');
-    }
     public function users()
     {
         return $this->hasMany(User::class, 'estatus_id');

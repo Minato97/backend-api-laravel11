@@ -37,7 +37,7 @@ services:
         ports:
             - "3306:3306"
         volumes:
-            - dbdata:/var/lib/mysq
+            - dbdata:/var/lib/mysql
         networks:
             - laravel
 
